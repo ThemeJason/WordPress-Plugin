@@ -22,7 +22,7 @@ class Admin {
 
 		$content = json_decode( wp_kses_post( wp_unslash( $_POST['content'] ) ), true );
 
-		if ( empty( $content['styles'] ) || ! is_array( $content['styles'] ) || empty( $content['styles']['version'] ) ) {
+		if ( empty( $content['styles'] ) || ! is_array( $content['styles'] ) || empty( $content['styles'] ) ) {
 			return;
 		}
 
@@ -40,6 +40,7 @@ class Admin {
 
 		$styles['isGlobalStylesUserThemeJSON'] = true;
 
+		// Parse from a theme.json file, instead of an imported one.
 		if ( empty( $styles['version'] ) || ! is_int( $styles['version'] ) ) {
 			$styles['version'] = \WP_Theme_JSON_Gutenberg::LATEST_SCHEMA;
 		}
