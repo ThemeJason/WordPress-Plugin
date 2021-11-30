@@ -22,16 +22,12 @@ class Admin {
 
 		$content = json_decode( wp_kses_post( wp_unslash( $_POST['content'] ) ), true );
 
-		if ( empty( $content['styles'] ) || empty( $content['name'] ) ) {
-			return;
-		}
-
-		if ( ! is_array( $content['styles'] ) || empty( $content['styles']['version'] ) || empty( $content['styles']['isGlobalStylesUserThemeJSON'] ) ) {
+		if ( empty( $content['styles'] ) || ! is_array( $content['styles'] ) || empty( $content['styles']['version'] ) ) {
 			return;
 		}
 
 		$styles = $content['styles'];
-		$name   = sanitize_key( $content['name'] );
+		$name   = 'wp-global-styles-' . urlencode( wp_get_theme()->get_stylesheet() );
 
 		$saved_styles = get_posts(
 			array(
@@ -42,11 +38,14 @@ class Admin {
 			)
 		);
 
+		$styles['isGlobalStylesUserThemeJSON'] = true;
+
+		if ( empty( $styles['version'] ) || ! is_int( $styles['version'] ) ) {
+			$styles['version'] = \WP_Theme_JSON_Gutenberg::LATEST_SCHEMA;
+		}
+
 		if ( ! empty( $saved_styles ) ) {
-
-			$styles['isGlobalStylesUserThemeJSON'] = true;
-
-			$styles = wp_update_post(
+			$result = wp_update_post(
 				array(
 					'ID'           => $saved_styles[0]->ID,
 					'post_content' => wp_json_encode( $styles ),
@@ -56,16 +55,24 @@ class Admin {
 
 				)
 			);
-			wp_send_json( array( 'success' => ! empty( $styles ) ), 200 );
 		} else {
-			wp_send_json(
+			$result = wp_insert_post(
 				array(
-					'success' => false,
-					'message' => __( 'Unable to find the global styles.', 'theme-jason' ),
+					'post_content' => wp_json_encode( $styles ),
+					'post_status'  => 'publish',
+					'post_title'   => __( 'Custom Styles', 'default' ),
+					'post_type'    => 'wp_global_styles',
+					'post_name'    => $name,
+					'tax_input'    => array(
+						'wp_theme' => array( wp_get_theme()->get_stylesheet() ),
+					),
 				),
-				200
+				true
 			);
 		}
+
+		wp_send_json( array( 'success' => ! empty( $result ) ), ! empty( $result ) ? 200 : 400 );
+
 		wp_die();
 	}
 
