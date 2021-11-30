@@ -22,12 +22,20 @@ class Admin {
 
 		$content = json_decode( wp_kses_post( wp_unslash( $_POST['content'] ) ), true );
 
-		if ( empty( $content['styles'] ) || ! is_array( $content['styles'] ) || empty( $content['styles'] ) ) {
-			return;
+		$to_save = array(
+			'isGlobalStylesUserThemeJSON' => true,
+			'version'                     => \WP_Theme_JSON_Gutenberg::LATEST_SCHEMA,
+		);
+
+		$allowed_items = array( 'settings', 'styles' );
+
+		foreach ( $allowed_items as $key => $value ) {
+			if ( ! empty( $content[ $value ] ) ) {
+				$to_save[ $value ] = $content[ $value ];
+			}
 		}
 
-		$styles = $content['styles'];
-		$name   = 'wp-global-styles-' . urlencode( wp_get_theme()->get_stylesheet() );
+		$name = 'wp-global-styles-' . urlencode( wp_get_theme()->get_stylesheet() );
 
 		$saved_styles = get_posts(
 			array(
@@ -38,18 +46,11 @@ class Admin {
 			)
 		);
 
-		$styles['isGlobalStylesUserThemeJSON'] = true;
-
-		// Parse from a theme.json file, instead of an imported one.
-		if ( empty( $styles['version'] ) || ! is_int( $styles['version'] ) ) {
-			$styles['version'] = \WP_Theme_JSON_Gutenberg::LATEST_SCHEMA;
-		}
-
 		if ( ! empty( $saved_styles ) ) {
 			$result = wp_update_post(
 				array(
 					'ID'           => $saved_styles[0]->ID,
-					'post_content' => wp_json_encode( $styles ),
+					'post_content' => wp_json_encode( $to_save ),
 					'post_author'  => get_current_user_id(),
 					'post_type'    => 'wp_global_styles',
 					'post_name'    => $name,
@@ -59,7 +60,7 @@ class Admin {
 		} else {
 			$result = wp_insert_post(
 				array(
-					'post_content' => wp_json_encode( $styles ),
+					'post_content' => wp_json_encode( $to_save ),
 					'post_status'  => 'publish',
 					'post_title'   => __( 'Custom Styles', 'default' ),
 					'post_type'    => 'wp_global_styles',
@@ -72,6 +73,8 @@ class Admin {
 			);
 		}
 
+		wp_cache_flush();
+
 		wp_send_json( array( 'success' => ! empty( $result ) ), ! empty( $result ) ? 200 : 400 );
 
 		wp_die();
@@ -83,11 +86,15 @@ class Admin {
 			return;
 		}
 
+		$name = 'wp-global-styles-' . urlencode( wp_get_theme()->get_stylesheet() );
+
 		$styles = get_posts(
 			array(
 				'numberposts' => 1,
-				'post_type'   => 'wp_global_styles',
 				'post_status' => 'publish',
+				'post_type'   => 'wp_global_styles',
+				'post_name'   => $name,
+
 			)
 		);
 

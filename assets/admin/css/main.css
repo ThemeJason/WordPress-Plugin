@@ -2,6 +2,6 @@
 	cursor: progress;
 }
 
-#theme-jason-export-styles.loading {
+#theme-jason-export-styles.loading, #theme-jason-import-styles.loading {
 	color: #c4c4c4;
 }
