@@ -1,0 +1,7 @@
+.theme-json-loading *{
+	cursor: progress;
+}
+
+#theme-jason-export-styles.loading {
+	color: #c4c4c4;
+}
