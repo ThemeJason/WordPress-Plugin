@@ -7,7 +7,7 @@ Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Use advanced theme.json features (which are basically where modern WordPress theme store styles) from the future, today with Theme Jason.
+The secret sauce to using all the fun styles on themejason.com.
 
 == Description ==
 
