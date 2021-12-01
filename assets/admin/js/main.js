@@ -1,6 +1,6 @@
 (function( $ ) {
 	'use strict';
-
+	
 	$( document ).on( 'click', '#edit-site-editor .edit-site-global-styles-sidebar .interface-complementary-area-header .components-dropdown', function( e ) {
 		let tries = 0;
 		let waitPopOver = setInterval( () => {
@@ -44,15 +44,26 @@
 								},
 								success: function( response ) {
 									if ( ! response.success ) {
-										alert( scriptParams.localization.error );
+										showMessage( scriptParams.localization.error );
 									} else {
-										alert( scriptParams.localization.success );
+										showMessage(
+											scriptParams.localization.success,
+											'success',
+											[
+												{
+												  url: '#',
+												  label: scriptParams.localization.refresh,
+												},
+											]
+										);
 										window.onbeforeunload = null;
-										location.reload();
+										setInterval( () => {
+											location.reload();
+										}, 1000 );
 									}
 								},
 								error: function() {
-									alert( response.message ? response.message : scriptParams.localization.error );
+									showMessage( response.message ? response.message : scriptParams.localization.error );
 								},
 								complete: function() {
 									$( 'body' ).removeClass( 'theme-json-loading' );
@@ -131,5 +142,17 @@
 				$( btn ).text( text );
 			}
 		}, 200 );
+	}
+
+	function showMessage( message, type = 'success', actions = null ) {
+		wp.data.dispatch("core/notices").createNotice(
+			type,
+			message,
+			{
+			  type: "snackbar",
+			  isDismissible: true,
+			  actions: actions,
+			}
+		);
 	}
 })( jQuery );

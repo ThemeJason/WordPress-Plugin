@@ -22,6 +22,10 @@ class Admin {
 
 		$content = json_decode( wp_kses_post( wp_unslash( $_POST['content'] ) ), true );
 
+		if ( ! empty( $content['config'] ) ) {
+			$content = $content['config'];
+		}
+
 		$to_save = array(
 			'isGlobalStylesUserThemeJSON' => true,
 			'version'                     => \WP_Theme_JSON_Gutenberg::LATEST_SCHEMA,
@@ -94,7 +98,6 @@ class Admin {
 				'post_status' => 'publish',
 				'post_type'   => 'wp_global_styles',
 				'post_name'   => $name,
-
 			)
 		);
 
@@ -107,7 +110,7 @@ class Admin {
 				array(
 					'content' => array(
 						'name'   => sanitize_key( $styles[0]->post_name ),
-						'styles' => $content,
+						'config' => $content,
 					),
 				),
 				200
@@ -136,6 +139,7 @@ class Admin {
 			'localization' => array(
 				'import_styles' => __( 'Import Styles', 'theme-jason' ),
 				'export_styles' => __( 'Export Styles', 'theme-jason' ),
+				'refresh'       => __( 'Refresh', 'theme-jason' ),
 				'success'       => __( 'Success.', 'theme-jason' ),
 				'error'         => __( 'An error occurred.', 'theme-jason' ),
 			),

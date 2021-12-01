@@ -25,6 +25,8 @@ define( 'THEME_JASON_DIRECTORY_URL', plugin_dir_url( __FILE__ ) );
 
 function theme_jason_init() {
 	require_once THEME_JASON_DIRECTORY_ROOT . '/classes/admin/Admin.php';
+	require_once THEME_JASON_DIRECTORY_ROOT . '/classes/front/Front.php';
 	new ThemeJason\Classes\Admin\Admin();
+	new ThemeJason\Classes\Front\Front();
 }
 theme_jason_init();
