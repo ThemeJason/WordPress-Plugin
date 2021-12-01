@@ -19,7 +19,17 @@ class Front {
 			! empty( $data['settings']['typography']['fontFamilies']['user'] ) &&
 			is_array( $data['settings']['typography']['fontFamilies']['user'] )
 		) {
-			$fonts = implode( '&', array_column( $data['settings']['typography']['fontFamilies']['user'], 'google' ) );
+
+			$fonts = $data['settings']['typography']['fontFamilies'];
+
+			$theme_fonts = ! empty( $fonts['theme'] ) ? $fonts['theme'] : array();
+			$user_fonts  = ! empty( $fonts['user'] ) ? $fonts['user'] : array();
+
+			$all_fonts    = array_merge( $theme_fonts, $user_fonts );
+			$google_fonts = array_column( $all_fonts, 'google' );
+			$google_fonts = array_unique( $google_fonts );
+
+			$fonts = implode( '&', $google_fonts );
 
 			// It's needed to use null as the version to prevent PHP from removing multiple the multiple font parameter.
 			wp_enqueue_style( 'theme-jason-fonts', sprintf( 'https://fonts.googleapis.com/css?%s', esc_attr( $fonts ) ), false, null ); // phpcs:ignore WordPress.WP
