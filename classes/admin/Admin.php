@@ -138,13 +138,13 @@ class Admin {
 
 	public function enqueue_scripts() {
 
-		wp_enqueue_style( 'theme-jason-admin-css', THEME_JASON_DIRECTORY_URL . 'assets/admin/css/main.css', array(), THEME_JASON_DIRECTORY_VERSION, 'all' );
+		wp_enqueue_style( 'theme-jason-admin-css', THEME_JASON_DIRECTORY_URL . 'assets/admin/css/main.css', array(), THEME_JASON_PLUGIN_VERSION, 'all' );
 
 		wp_enqueue_script(
 			'theme-jason-admin-js',
 			THEME_JASON_DIRECTORY_URL . 'assets/admin/js/main.js',
 			array( 'wp-blocks', 'wp-element', 'wp-hooks', 'wp-components', 'wp-i18n', 'wp-edit-post', 'wp-compose' ),
-			THEME_JASON_DIRECTORY_VERSION,
+			THEME_JASON_PLUGIN_VERSION,
 			true
 		);
 

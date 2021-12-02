@@ -26,7 +26,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 define( 'THEME_JASON_DIRECTORY_ROOT', __DIR__ );
 define( 'THEME_JASON_DIRECTORY_URL', plugin_dir_url( __FILE__ ) );
-define( 'THEME_JASON_DIRECTORY_VERSION', '1.0.0' );
+define( 'THEME_JASON_PLUGIN_VERSION', '1.0.0' );
 
 /**
  * Inits the Theme Jason plugin.
