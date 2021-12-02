@@ -9,6 +9,11 @@ class Front {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
 
+	/**
+	 * Enqueues the Google fonts based on user and theme styles.
+	 *
+	 * @return void
+	 */
 	public function enqueue_scripts() {
 		$data = \WP_Theme_JSON_Resolver_Gutenberg::get_merged_data();
 		$data = $data->get_raw_data();

@@ -13,6 +13,10 @@
  * Requires PHP: 7.0
  * Requires At Least: 5.8
  * Version: 1.0.0
+ * Text Domain:       theme-jason
+ * Domain Path:       /languages
+ *
+ * @package ThemeJason
  */
 
 // If this file is called directly, abort.
@@ -22,7 +26,13 @@ if ( ! defined( 'WPINC' ) ) {
 
 define( 'THEME_JASON_DIRECTORY_ROOT', __DIR__ );
 define( 'THEME_JASON_DIRECTORY_URL', plugin_dir_url( __FILE__ ) );
+define( 'THEME_JASON_DIRECTORY_VERSION', '1.0.0' );
 
+/**
+ * Inits the Theme Jason plugin.
+ *
+ * @return void
+ */
 function theme_jason_init() {
 	require_once THEME_JASON_DIRECTORY_ROOT . '/classes/admin/Admin.php';
 	require_once THEME_JASON_DIRECTORY_ROOT . '/classes/front/Front.php';
@@ -30,3 +40,18 @@ function theme_jason_init() {
 	new ThemeJason\Classes\Front\Front();
 }
 theme_jason_init();
+
+
+/**
+ * Loads the plugin text domain for translation.
+ *
+ * @return void
+ */
+function theme_jason_load_plugin_textdomain() {
+	load_plugin_textdomain(
+		'theme-jason',
+		false,
+		dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
+	);
+}
+add_action( 'plugins_loaded', 'theme_jason_load_plugin_textdomain' );

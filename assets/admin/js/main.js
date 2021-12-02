@@ -1,6 +1,6 @@
 (function( $ ) {
 	'use strict';
-	
+
 	$( document ).on( 'click', '#edit-site-editor .edit-site-global-styles-sidebar .interface-complementary-area-header .components-dropdown', function( e ) {
 		let tries = 0;
 		let waitPopOver = setInterval( () => {
@@ -51,14 +51,15 @@
 											'success',
 											[
 												{
-												  url: '#',
+												  url: window.location.href,
 												  label: scriptParams.localization.refresh,
 												},
 											]
 										);
 										window.onbeforeunload = null;
-										setInterval( () => {
+										let reloadPage = setInterval( () => {
 											location.reload();
+											clearTimeout( reloadPage );
 										}, 1000 );
 									}
 								},

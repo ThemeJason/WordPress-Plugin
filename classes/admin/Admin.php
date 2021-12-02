@@ -10,6 +10,13 @@ class Admin {
 		add_action( 'wp_ajax_theme_jason_export_styles', array( $this, 'export_styles' ) );
 	}
 
+	/**
+	 * Validates the user permissions and runs the AJAX 'theme_jason_import_styles' to import the Global Styles.
+	 *
+	 * Only users with 'edit_theme_options' permission can import Global Styles.
+	 *
+	 * @return void
+	 */
 	public function import_styles() {
 
 		if ( empty( $_POST['content'] ) ) {
@@ -26,9 +33,12 @@ class Admin {
 			$content = $content['config'];
 		}
 
+		// Gets the provided version or the latest schema if null.
+		$version = empty( $content['version'] ) && is_numeric( $content['version'] ) ? intval( $content['version'] ) : \WP_Theme_JSON_Gutenberg::LATEST_SCHEMA;
+
 		$to_save = array(
 			'isGlobalStylesUserThemeJSON' => true,
-			'version'                     => \WP_Theme_JSON_Gutenberg::LATEST_SCHEMA,
+			'version'                     => $version,
 		);
 
 		$allowed_items = array( 'settings', 'styles' );
@@ -39,7 +49,7 @@ class Admin {
 			}
 		}
 
-		$name = 'wp-global-styles-' . urlencode( wp_get_theme()->get_stylesheet() );
+		$name = 'wp-global-styles-' . urlencode( wp_get_theme()->get_stylesheet() ); // Imports to the current theme.
 
 		$saved_styles = get_posts(
 			array(
@@ -84,6 +94,13 @@ class Admin {
 		wp_die();
 	}
 
+	/**
+	 * Validates the user permissions and runs the AJAX 'theme_jason_export_styles' to export the Global Styles.
+	 *
+	 * Only users with 'edit_theme_options' permission can export Global Styles.
+	 *
+	 * @return void
+	 */
 	public function export_styles() {
 
 		if ( ! current_user_can( 'edit_theme_options' ) || empty( check_ajax_referer( 'theme_json_export_styles' ) ) ) {
@@ -120,12 +137,14 @@ class Admin {
 	}
 
 	public function enqueue_scripts() {
-		wp_enqueue_style( 'theme-jason-admin-css', THEME_JASON_DIRECTORY_URL . 'assets/admin/css/main.css', array(), time(), 'all' );
+
+		wp_enqueue_style( 'theme-jason-admin-css', THEME_JASON_DIRECTORY_URL . 'assets/admin/css/main.css', array(), THEME_JASON_DIRECTORY_VERSION, 'all' );
+
 		wp_enqueue_script(
 			'theme-jason-admin-js',
 			THEME_JASON_DIRECTORY_URL . 'assets/admin/js/main.js',
 			array( 'wp-blocks', 'wp-element', 'wp-hooks', 'wp-components', 'wp-i18n', 'wp-edit-post', 'wp-compose' ),
-			time(),
+			THEME_JASON_DIRECTORY_VERSION,
 			true
 		);
 
@@ -144,6 +163,7 @@ class Admin {
 				'error'         => __( 'An error occurred.', 'theme-jason' ),
 			),
 		);
+
 		wp_localize_script( 'theme-jason-admin-js', 'scriptParams', $script_params );
 	}
 
