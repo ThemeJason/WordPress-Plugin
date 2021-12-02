@@ -1,7 +1,7 @@
 (function( $ ) {
 	'use strict';
 
-	$( document ).on( 'click', '#edit-site-editor .edit-site-global-styles-sidebar .interface-complementary-area-header .components-dropdown', function( e ) {
+	$( document ).on( 'click', '.edit-site .edit-site-global-styles-sidebar .interface-complementary-area-header .components-dropdown', function( e ) {
 		let tries = 0;
 		let waitPopOver = setInterval( () => {
 			if ( $( '#edit-site-editor  .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover)' ).length ) {
