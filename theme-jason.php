@@ -5,13 +5,13 @@
  * Domain Path: /languages
  * Plugin URI: https://themejason.com
  * Assets URI: https://themejason.com
- * Author: Theme Json
+ * Author: Theme Jason
  * Author URI: https://themejason.com
  * License: GPLv3
  * License URI: http://www.gnu.org/licenses/gpl.txt
  * Description: The secret sauce to using all the fun styles on themejason.com.
  * Requires PHP: 7.0
- * Requires At Least: 5.8
+ * Requires At Least: 5.9
  * Version: 1.0.0
  * Text Domain:       theme-jason
  * Domain Path:       /languages
