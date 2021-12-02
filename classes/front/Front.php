@@ -15,7 +15,13 @@ class Front {
 	 * @return void
 	 */
 	public function enqueue_scripts() {
-		$data = \WP_Theme_JSON_Resolver_Gutenberg::get_merged_data();
+
+		if ( class_exists( '\WP_Theme_JSON_Resolver_Gutenberg' ) ) {
+			$data = \WP_Theme_JSON_Resolver_Gutenberg::get_merged_data();
+		} else {
+			$data = \WP_Theme_JSON_Resolver::get_merged_data();
+		}
+
 		$data = $data->get_raw_data();
 		if (
 			! empty( $data['settings'] ) &&
