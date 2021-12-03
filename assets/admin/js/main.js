@@ -4,13 +4,13 @@
 	$( document ).on( 'click', '.edit-site .edit-site-global-styles-sidebar .interface-complementary-area-header .components-dropdown', function( e ) {
 		let tries = 0;
 		let waitPopOver = setInterval( () => {
-			if ( $( '#edit-site-editor  .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover)' ).length ) {
+			if ( $( '.edit-site  .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover)' ).length ) {
 				clearTimeout( waitPopOver );
 				if ( $( '#theme-jason-import-styles' ).length ) {
 					return;
 				}
 
-				let import_btn = $( '#edit-site-editor .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover) .components-dropdown-menu__menu button' ).clone();
+				let import_btn = $( '.edit-site .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover) .components-dropdown-menu__menu button' ).clone();
 				$( import_btn ).attr( 'id', 'theme-jason-import-styles' );
 				$( import_btn ).text( scriptParams.localization.import_styles );
 				$( import_btn ).off( 'click' );
@@ -79,9 +79,9 @@
 					input.click();
 
 				} );
-				$( import_btn ).appendTo( '#edit-site-editor  .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover) .components-dropdown-menu__menu' );
+				$( import_btn ).appendTo( '.edit-site  .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover) .components-dropdown-menu__menu' );
 
-				let export_btn = $( '#edit-site-editor .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover) .components-dropdown-menu__menu button#theme-jason-import-styles' ).clone();
+				let export_btn = $( '.edit-site .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover) .components-dropdown-menu__menu button#theme-jason-import-styles' ).clone();
 				$( export_btn ).attr( 'id', 'theme-jason-export-styles' );
 				$( export_btn ).text( scriptParams.localization.export_styles );
 				$( export_btn ).off( 'click' );
@@ -124,7 +124,7 @@
 						
 					});
 				} );
-				$( export_btn ).appendTo( '#edit-site-editor  .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover) .components-dropdown-menu__menu' );
+				$( export_btn ).appendTo( '.edit-site  .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover) .components-dropdown-menu__menu' );
 			} else if ( tries > 5 ) {
 				clearTimeout( waitPopOver );
 			} else {
