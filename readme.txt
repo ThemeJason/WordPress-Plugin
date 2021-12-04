@@ -24,7 +24,7 @@ This plugin requires you be running WordPress 5.6 Beta.
 
 = Why do I need this? =
 
-If you go to themejason.com all will be revealed to you. This plugin is basically a connector to use the services found there.
+When you go [ThemeJason.com](https://themejason.com) you'll be able to download various style packs that will help you turn your boring themes into something you'll fall in love with. Normally if you want to change your style in the WordPress Global Styles interface you have to click a bunch of buttons and enter a bunch of information. With this plugin and the style packs found on [ThemeJason.com](https://themejason.com) you can accomplish all that work with two clicks of the mouse. 
 
 == Changelog ==
 
