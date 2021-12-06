@@ -4,6 +4,16 @@ namespace ThemeJason\Classes\Admin;
 
 class Admin {
 
+	/**
+	 * Holds block metadata extracted from block.json
+	 * to be shared among all instances so we don't
+	 * process it twice.
+	 *
+	 * @var array
+	 */
+	private static $blocks_metadata = null;
+
+
 	function __construct() {
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_scripts' ) );
 		add_action( 'wp_ajax_theme_jason_import_styles', array( $this, 'import_styles' ) );
@@ -41,13 +51,22 @@ class Admin {
 			'version'                     => $version,
 		);
 
+		$config        = array();
 		$allowed_items = array( 'settings', 'styles' );
 
 		foreach ( $allowed_items as $key => $value ) {
 			if ( ! empty( $content[ $value ] ) ) {
-				$to_save[ $value ] = $content[ $value ];
+				$config[ $value ] = $content[ $value ];
 			}
 		}
+
+		// Creates a \WP_Theme_JSON_Gutenberg class to use its constants.
+		$theme_gutenberg     = new \WP_Theme_JSON_Gutenberg( $content, 'user' );
+		$valid_block_names   = array_keys( $this->get_blocks_metadata( $theme_gutenberg::ELEMENTS ) );
+		$valid_element_names = array_keys( $theme_gutenberg::ELEMENTS );
+		$config              = $this->sanitize_gutenberg_schema( $config, $valid_block_names, $valid_element_names, $theme_gutenberg::VALID_TOP_LEVEL_KEYS, $theme_gutenberg::VALID_STYLES, $theme_gutenberg::VALID_SETTINGS );
+
+		$to_save = array_merge( $to_save, $config );
 
 		$name = 'wp-global-styles-' . urlencode( wp_get_theme()->get_stylesheet() ); // Imports to the current theme.
 
@@ -165,6 +184,163 @@ class Admin {
 		);
 
 		wp_localize_script( 'theme-jason-admin-js', 'scriptParams', $script_params );
+	}
+
+	/**
+	 * Sanitizes the input according to the schemas. (Duplicated from \WP_Theme_JSON_Gutenberg::sanitize)
+	 *
+	 * @param array $input Structure to sanitize.
+	 * @param array $valid_block_names List of valid block names.
+	 * @param array $valid_element_names List of valid element names.
+	 *
+	 * @return array The sanitized output.
+	 */
+	private function sanitize_gutenberg_schema( $input, $valid_block_names, $valid_element_names, $valid_top_level_keys, $valid_styles, $valid_settings ) {
+		$output = array();
+
+		if ( ! is_array( $input ) ) {
+			return $output;
+		}
+
+		$output = array_intersect_key( $input, array_flip( $valid_top_level_keys ) );
+
+		// Build the schema based on valid block & element names.
+		$schema                 = array();
+		$schema_styles_elements = array();
+		foreach ( $valid_element_names as $element ) {
+			$schema_styles_elements[ $element ] = $valid_styles;
+		}
+		$schema_styles_blocks   = array();
+		$schema_settings_blocks = array();
+		foreach ( $valid_block_names as $block ) {
+			$schema_settings_blocks[ $block ]           = $valid_settings;
+			$schema_styles_blocks[ $block ]             = $valid_styles;
+			$schema_styles_blocks[ $block ]['elements'] = $schema_styles_elements;
+		}
+		$schema['styles']             = $valid_styles;
+		$schema['styles']['blocks']   = $schema_styles_blocks;
+		$schema['styles']['elements'] = $schema_styles_elements;
+		$schema['settings']           = $valid_settings;
+		$schema['settings']['blocks'] = $schema_settings_blocks;
+
+		// Remove anything that's not present in the schema.
+		foreach ( array( 'styles', 'settings' ) as $subtree ) {
+			if ( ! isset( $input[ $subtree ] ) ) {
+				continue;
+			}
+
+			if ( ! is_array( $input[ $subtree ] ) ) {
+				unset( $output[ $subtree ] );
+				continue;
+			}
+
+			$result = self::remove_keys_not_in_schema( $input[ $subtree ], $schema[ $subtree ] );
+
+			if ( empty( $result ) ) {
+				unset( $output[ $subtree ] );
+			} else {
+				$output[ $subtree ] = $result;
+			}
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Given a tree, removes the keys that are not present in the schema. (Duplicated from \WP_Theme_JSON_Gutenberg::remove_keys_not_in_schema)
+	 *
+	 * It is recursive and modifies the input in-place.
+	 *
+	 * @param array $tree Input to process.
+	 * @param array $schema Schema to adhere to.
+	 *
+	 * @return array Returns the modified $tree.
+	 */
+	private function remove_keys_not_in_schema( $tree, $schema ) {
+		$tree = array_intersect_key( $tree, $schema );
+
+		foreach ( $schema as $key => $data ) {
+			if ( ! isset( $tree[ $key ] ) ) {
+				continue;
+			}
+
+			if ( is_array( $schema[ $key ] ) && is_array( $tree[ $key ] ) ) {
+				$tree[ $key ] = $this->remove_keys_not_in_schema( $tree[ $key ], $schema[ $key ] );
+
+				if ( empty( $tree[ $key ] ) ) {
+					unset( $tree[ $key ] );
+				}
+			} elseif ( is_array( $schema[ $key ] ) && ! is_array( $tree[ $key ] ) ) {
+				unset( $tree[ $key ] );
+			}
+		}
+
+		return $tree;
+	}
+
+	/**
+	 * Returns the metadata for each block. (Duplicated from \WP_Theme_JSON_Gutenberg::get_blocks_metadata)
+	 *
+	 * Example:
+	 *
+	 * {
+	 *   'core/paragraph': {
+	 *     'selector': 'p'
+	 *   },
+	 *   'core/heading': {
+	 *     'selector': 'h1'
+	 *   },
+	 *   'core/group': {
+	 *     'selector': '.wp-block-group'
+	 *   },
+	 *   'core/cover': {
+	 *     'selector': '.wp-block-cover',
+	 *     'duotone': '> .wp-block-cover__image-background, > .wp-block-cover__video-background'
+	 *   }
+	 * }
+	 *
+	 * @return array Block metadata.
+	 */
+	private function get_blocks_metadata( $elements ) {
+		if ( null !== self::$blocks_metadata ) {
+			return self::$blocks_metadata;
+		}
+
+		self::$blocks_metadata = array();
+
+		$registry = \WP_Block_Type_Registry::get_instance();
+		$blocks   = $registry->get_all_registered();
+		foreach ( $blocks as $block_name => $block_type ) {
+			if (
+				isset( $block_type->supports['__experimentalSelector'] ) &&
+				is_string( $block_type->supports['__experimentalSelector'] )
+			) {
+				self::$blocks_metadata[ $block_name ]['selector'] = $block_type->supports['__experimentalSelector'];
+			} else {
+				self::$blocks_metadata[ $block_name ]['selector'] = '.wp-block-' . str_replace( '/', '-', str_replace( 'core/', '', $block_name ) );
+			}
+
+			if (
+				isset( $block_type->supports['color']['__experimentalDuotone'] ) &&
+				is_string( $block_type->supports['color']['__experimentalDuotone'] )
+			) {
+				self::$blocks_metadata[ $block_name ]['duotone'] = $block_type->supports['color']['__experimentalDuotone'];
+			}
+
+			// Assign defaults, then overwrite those that the block sets by itself.
+			// If the block selector is compounded, will append the element to each
+			// individual block selector.
+			$block_selectors = explode( ',', self::$blocks_metadata[ $block_name ]['selector'] );
+			foreach ( $elements as $el_name => $el_selector ) {
+				$element_selector = array();
+				foreach ( $block_selectors as $selector ) {
+					$element_selector[] = $selector . ' ' . $el_selector;
+				}
+				self::$blocks_metadata[ $block_name ]['elements'][ $el_name ] = implode( ',', $element_selector );
+			}
+		}
+
+		return self::$blocks_metadata;
 	}
 
 }
