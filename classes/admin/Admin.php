@@ -43,8 +43,14 @@ class Admin {
 			$content = $content['config'];
 		}
 
+		if ( class_exists( '\WP_Theme_JSON_Gutenberg' ) ) {
+			$schema = \WP_Theme_JSON_Gutenberg::LATEST_SCHEMA;
+		} else {
+			$schema = \WP_Theme_JSON::LATEST_SCHEMA;
+		}
+
 		// Gets the provided version or the latest schema if null.
-		$version = empty( $content['version'] ) && is_numeric( $content['version'] ) ? intval( $content['version'] ) : \WP_Theme_JSON_Gutenberg::LATEST_SCHEMA;
+		$version = empty( $content['version'] ) && is_numeric( $content['version'] ) ? intval( $content['version'] ) : $schema;
 
 		$to_save = array(
 			'isGlobalStylesUserThemeJSON' => true,
