@@ -9,7 +9,7 @@
  * Description: The secret sauce to using all the fun styles on themejason.com.
  * Requires PHP: 7.0
  * Requires At Least: 5.8
- * Version: 1.0.0
+ * Version: 1.0.1
  * Text Domain:       theme-jason
  * Domain Path:       /languages
  *
@@ -23,7 +23,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 define( 'THEME_JASON_DIRECTORY_ROOT', __DIR__ );
 define( 'THEME_JASON_DIRECTORY_URL', plugin_dir_url( __FILE__ ) );
-define( 'THEME_JASON_PLUGIN_VERSION', '1.0.0' );
+define( 'THEME_JASON_PLUGIN_VERSION', '1.0.1' );
 
 /**
  * Inits the Theme Jason plugin.
