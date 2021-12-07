@@ -181,10 +181,10 @@ class Admin {
 				'export_nonce' => wp_create_nonce( 'theme_json_export_styles' ),
 			),
 			'localization' => array(
-				'import_styles' => __( 'Import Styles', 'theme-jason' ),
-				'export_styles' => __( 'Export Styles', 'theme-jason' ),
+				'import_styles' => __( 'Import styles', 'theme-jason' ),
+				'export_styles' => __( 'Export styles', 'theme-jason' ),
 				'refresh'       => __( 'Refresh', 'theme-jason' ),
-				'success'       => __( 'Success.', 'theme-jason' ),
+				'success'       => __( 'Style Activated', 'theme-jason' ),
 				'error'         => __( 'An error occurred.', 'theme-jason' ),
 			),
 		);
