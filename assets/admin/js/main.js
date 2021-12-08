@@ -145,7 +145,7 @@
 		}, 200 );
 	}
 
-	function showMessage( message, type = 'success', actions = null ) {
+	function showMessage( message, type = 'success', actions = [] ) {
 		wp.data.dispatch("core/notices").createNotice(
 			type,
 			message,

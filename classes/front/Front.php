@@ -16,10 +16,10 @@ class Front {
 	 */
 	public function enqueue_scripts() {
 
-		if ( class_exists( '\WP_Theme_JSON_Resolver_Gutenberg' ) ) {
-			$data = \WP_Theme_JSON_Resolver_Gutenberg::get_merged_data();
-		} else {
+		if ( class_exists( '\WP_Theme_JSON_Resolver' ) ) {
 			$data = \WP_Theme_JSON_Resolver::get_merged_data();
+		} else {
+			$data = \WP_Theme_JSON_Resolver_Gutenberg::get_merged_data();
 		}
 
 		$data = $data->get_raw_data();

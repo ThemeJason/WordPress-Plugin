@@ -43,10 +43,14 @@ class Admin {
 			$content = $content['config'];
 		}
 
-		if ( class_exists( '\WP_Theme_JSON_Gutenberg' ) ) {
-			$schema = \WP_Theme_JSON_Gutenberg::LATEST_SCHEMA;
+		if ( empty( $content ) ) {
+			return;
+		}
+
+		if ( class_exists( '\WP_Theme_JSON' ) ) {
+			$theme_gutenberg = new \WP_Theme_JSON( $content, 'user' );
 		} else {
-			$schema = \WP_Theme_JSON::LATEST_SCHEMA;
+			$theme_gutenberg = new \WP_Theme_JSON_Gutenberg( $content, 'user' );
 		}
 
 		// Gets the provided version or the latest schema if null.
@@ -67,12 +71,12 @@ class Admin {
 		}
 
 		// Creates a \WP_Theme_JSON_Gutenberg class to use its constants.
-		if ( class_exists( '\WP_Theme_JSON_Gutenberg' ) ) {
-			$theme_gutenberg = new \WP_Theme_JSON_Gutenberg( $content, 'user' );
-		} else {
+		if ( class_exists( '\WP_Theme_JSON' ) ) {
 			$theme_gutenberg = new \WP_Theme_JSON( $content, 'user' );
+		} else {
+			$theme_gutenberg = new \WP_Theme_JSON_Gutenberg( $content, 'user' );
 		}
-		
+
 		$valid_block_names   = array_keys( $this->get_blocks_metadata( $theme_gutenberg::ELEMENTS ) );
 		$valid_element_names = array_keys( $theme_gutenberg::ELEMENTS );
 		$config              = $this->sanitize_gutenberg_schema( $config, $valid_block_names, $valid_element_names, $theme_gutenberg::VALID_TOP_LEVEL_KEYS, $theme_gutenberg::VALID_STYLES, $theme_gutenberg::VALID_SETTINGS );
