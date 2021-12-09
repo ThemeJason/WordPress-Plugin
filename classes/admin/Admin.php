@@ -48,9 +48,9 @@ class Admin {
 		}
 
 		if ( class_exists( '\WP_Theme_JSON' ) ) {
-			$theme_gutenberg = new \WP_Theme_JSON( $content, 'user' );
+			$schema = new \WP_Theme_JSON( $content, 'user' );
 		} else {
-			$theme_gutenberg = new \WP_Theme_JSON_Gutenberg( $content, 'user' );
+			$schema = new \WP_Theme_JSON_Gutenberg( $content, 'user' );
 		}
 
 		// Gets the provided version or the latest schema if null.
