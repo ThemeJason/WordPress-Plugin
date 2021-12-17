@@ -11,6 +11,11 @@
 				}
 
 				let import_btn = $( '.edit-site .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover) .components-dropdown-menu__menu button' ).clone();
+				
+				if ( import_btn.length > 1 ) {
+					import_btn = import_btn[0];
+				}
+				
 				$( import_btn ).attr( 'id', 'theme-jason-import-styles' );
 				$( import_btn ).text( scriptParams.localization.import_styles );
 				$( import_btn ).off( 'click' );
@@ -82,6 +87,11 @@
 				$( import_btn ).appendTo( '.edit-site  .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover) .components-dropdown-menu__menu' );
 
 				let export_btn = $( '.edit-site .popover-slot .components-popover:not(.block-editor-block-settings-menu__popover) .components-dropdown-menu__menu button#theme-jason-import-styles' ).clone();
+				
+				if ( export_btn.length > 1 ) {
+					export_btn = export_btn[0];
+				}
+				
 				$( export_btn ).attr( 'id', 'theme-jason-export-styles' );
 				$( export_btn ).text( scriptParams.localization.export_styles );
 				$( export_btn ).off( 'click' );
@@ -145,7 +155,7 @@
 		}, 200 );
 	}
 
-	function showMessage( message, type = 'success', actions = [] ) {
+	function showMessage( message, type = 'success', actions = null ) {
 		wp.data.dispatch("core/notices").createNotice(
 			type,
 			message,

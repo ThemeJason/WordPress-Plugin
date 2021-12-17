@@ -1,10 +1,10 @@
 === Theme Jason ===
 Contributors: (themejason)
 Tags: theme.json, fonts, colors
-Requires at least: 5.9
+Requires at least: 5.8
 Tested up to: 5.8.2
 Requires PHP: 7.0
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,3 +30,10 @@ When you go [ThemeJason.com](https://themejason.com) you'll be able to download 
 
 = 1.0 =
 * It's alive
+
+= 1.0.1 =
+* Fixed why styles weren't importing correctly.
+
+= 1.0.2 =
+* Fixed the menu items from showing up twice.
+
